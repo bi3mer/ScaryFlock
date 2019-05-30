@@ -4,6 +4,8 @@ public abstract class FlockingAgent : MonoBehaviour
 {
     private readonly float maxRadius = 20;
     private readonly float maxWeight = 300;
+    public readonly float MaxAcceleration = 3;
+    public readonly float MaxVelocity = 1;
 
     public static Vector2 WorldMin;
     public static Vector2 WorldMax;
@@ -21,10 +23,6 @@ public abstract class FlockingAgent : MonoBehaviour
     public float AllignmentWeight;
     public float WanderWeight;
     public float AvoidWeight;
-
-    [Header("Physics")]
-    public float MaxAcceleration;
-    public float MaxVelocity;
 
     [Header("Smoothing Movement")]
     public float Jitter;
@@ -62,9 +60,8 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public void OnUpdate()
     {
-        Acceleration = Vector2.ClampMagnitude(Combine(), MaxAcceleration);
-
-        // Euler Forward Integration
+        Vector2 temp = Combine();
+        Acceleration = Vector2.ClampMagnitude(temp, MaxAcceleration);
         Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, MaxVelocity);
 
         // Set new position
