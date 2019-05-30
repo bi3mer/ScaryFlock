@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1051524645014284630}
   - component: {fileID: 5807397070432244193}
   - component: {fileID: 7801854213338278485}
+  - component: {fileID: -3499116934539675914}
+  - component: {fileID: -1979829001900732366}
   m_Layer: 0
   m_Name: Predator
   m_TagString: Untagged
@@ -118,3 +120,55 @@ CircleCollider2D:
   m_Offset: {x: -0.0026631355, y: 0}
   serializedVersion: 2
   m_Radius: 0.111185074
+--- !u!114 &-3499116934539675914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8067168371378446905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eebdc275537700346af0e70612b9c996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CohesionRadius: 0
+  SeparationRadius: 0
+  AllignmentRadius: 0
+  WanderRadius: 0
+  AvoidRadius: 0
+  CohesionWeight: 0
+  SeparationWeight: 0
+  AllignmentWeight: 0
+  WanderWeight: 0
+  AvoidWeight: 0
+  MaxAcceleration: 0
+  MaxVelocity: 0
+  Jitter: 0
+  WanderDistanceRadius: 0
+--- !u!114 &-1979829001900732366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8067168371378446905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eebdc275537700346af0e70612b9c996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CohesionRadius: 0
+  SeparationRadius: 0
+  AllignmentRadius: 0
+  WanderRadius: 0
+  AvoidRadius: 0
+  CohesionWeight: 0
+  SeparationWeight: 0
+  AllignmentWeight: 0
+  WanderWeight: 0
+  AvoidWeight: 0
+  MaxAcceleration: 0
+  MaxVelocity: 0
+  Jitter: 0
+  WanderDistanceRadius: 0
