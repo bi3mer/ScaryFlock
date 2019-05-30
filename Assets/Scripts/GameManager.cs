@@ -46,8 +46,8 @@ public class GameManager : Singleton<GameManager>
     {
         FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
         FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
-        FlockingAgent.PredatorMask = LayerMask.NameToLayer("predator");
-        FlockingAgent.FriendlyMask = LayerMask.GetMask("prey", "player");
+        FlockingAgent.PredatorMask = LayerMask.NameToLayer(Tag.Predator);
+        FlockingAgent.FriendlyMask = LayerMask.GetMask(Tag.Prey, Tag.Player);
 
         if (startOnStart)
         {

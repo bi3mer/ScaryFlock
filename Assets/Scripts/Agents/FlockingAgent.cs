@@ -225,6 +225,5 @@ public abstract class FlockingAgent : MonoBehaviour
     //    Gizmos.color = Color.red;
     //    Gizmos.DrawWireSphere(transform.position, CohesionRadius);
     //}
-
 #endif
 }

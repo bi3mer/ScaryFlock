@@ -138,7 +138,7 @@ MonoBehaviour:
   AllignmentRadius: 1
   WanderRadius: 1
   AvoidRadius: 1
-  CohesionWeight: 45.81
+  CohesionWeight: 34.12
   SeparationWeight: 14.54
   AllignmentWeight: 2.55
   WanderWeight: 8.84
