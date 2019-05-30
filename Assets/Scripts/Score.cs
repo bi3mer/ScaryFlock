@@ -13,18 +13,13 @@ public class Score : MonoBehaviour
         Assert.IsNotNull(text);
     }
 
-    private void Start()
-    {
-        text.text = "0";
-    }
-
     public void Reset()
     {
         text.text = "0";
     }
 
-    public void UpdateScore()
+    public void UpdateScore(int score)
     {
-        text.text = GameManager.Instance.PreyCount.ToString();
+        text.text = score.ToString();
     }
 }

@@ -2,13 +2,18 @@
 
 public abstract class FlockingAgent : MonoBehaviour
 {
-    private readonly float maxRadius = 20;
-    private readonly float maxWeight = 300;
-    public readonly float MaxAcceleration = 3;
-    public readonly float MaxVelocity = 1;
+    private readonly float maxRadius = 1.5f;
+    private readonly float maxWeight = 100;
 
     public static Vector2 WorldMin;
     public static Vector2 WorldMax;
+    public static LayerMask PredatorMask;
+    public static LayerMask FriendlyMask;
+
+    private float maxAcceleration = 3;
+    private float maxVelocity = 1;
+    private float predatorMaxVelocity = 2;
+    public bool isPredator = false;
 
     [Header("Radius")]
     public float CohesionRadius;
@@ -28,6 +33,7 @@ public abstract class FlockingAgent : MonoBehaviour
     public float Jitter;
     public float WanderDistanceRadius;
 
+
     public Vector2 Velocity { get; private set; }
     public Vector2 Acceleration { get; private set; }
 
@@ -37,6 +43,11 @@ public abstract class FlockingAgent : MonoBehaviour
 
     private void Start()
     {
+        if (isPredator)
+        {
+            maxVelocity = predatorMaxVelocity;
+        }
+
         Velocity = new Vector2(Random.Range(-2, 2), Random.Range(-2, 2));
     }
 
@@ -60,11 +71,10 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public void OnUpdate()
     {
+        // run flocking 
         Vector2 temp = Combine();
-        Acceleration = Vector2.ClampMagnitude(temp, MaxAcceleration);
-        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, MaxVelocity);
-
-        // Set new position
+        Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
+        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
         transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
 
         // Keep agent in world bounds
@@ -73,10 +83,10 @@ public abstract class FlockingAgent : MonoBehaviour
         float z = transform.position.z;
         if (x < WorldMin.x) transform.position = new Vector3(WorldMin.x, y, z);
         if (x > WorldMax.x) transform.position = new Vector3(WorldMax.x, y, z);
-        if (y < WorldMin.y) transform.position = new Vector3(x, WorldMin.y, z);
-        if (y > WorldMax.y) transform.position = new Vector3(x, WorldMax.y, z);
+        if (y < WorldMin.y) transform.position = new Vector3(transform.position.x, WorldMin.y, z);
+        if (y > WorldMax.y) transform.position = new Vector3(transform.position.x, WorldMax.y, z);
 
-        // set allignment
+        // set agent alignment 
         if (Velocity.magnitude > 0)
         {
             float angle = Mathf.Atan2(Velocity.y, Velocity.x) * Mathf.Rad2Deg - 90;
@@ -86,17 +96,27 @@ public abstract class FlockingAgent : MonoBehaviour
 
     protected Vector2 Combine()
     {
-        return CohesionWeight * Cohesion() +
-            SeparationWeight * Separation() +
-            AllignmentWeight * Allignment() +
-            WanderWeight * Wander() +
-            AvoidWeight * Avoid();
+        if (isPredator)
+        {
+            return CohesionWeight * Cohesion() +
+                SeparationWeight * Separation() +
+                AllignmentWeight * Allignment() +
+                WanderWeight * Wander() +
+                AvoidWeight * Avoid();
+        }
+        else
+        {
+            return CohesionWeight * Cohesion() +
+                SeparationWeight * Separation() +
+                AllignmentWeight * Allignment() +
+                WanderWeight * Wander();
+        }
     }
 
     protected Vector2 Cohesion()
     {
         Vector3 result = new Vector3();
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, CohesionRadius, gameObject.layer);
+        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, CohesionRadius, FriendlyMask);
 
         if (neighbors.Length > 0)
         {
@@ -123,7 +143,16 @@ public abstract class FlockingAgent : MonoBehaviour
     protected Vector2 Separation()
     {
         Vector2 result = new Vector3();
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, gameObject.layer);
+        Collider2D[] neighbors;
+
+        if (isPredator)
+        {
+            neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, PredatorMask);
+        }
+        else
+        {
+            neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, FriendlyMask);
+        }
 
         for (int i = 0; i < neighbors.Length; ++i)
         {
@@ -143,7 +172,7 @@ public abstract class FlockingAgent : MonoBehaviour
     protected Vector2 Allignment()
     {
         Vector2 result = new Vector2();
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, gameObject.layer);
+        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, FriendlyMask);
 
         if (neighbors.Length > 0)
         {
@@ -160,14 +189,14 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public Vector2 Flee(Vector3 targ)
     {
-        Vector2 desiredVel = (transform.position - targ).normalized * MaxVelocity;
+        Vector2 desiredVel = (transform.position - targ).normalized * maxVelocity;
         return desiredVel - Velocity;
     }
 
     public Vector2 Avoid()
     {
         Vector2 result = new Vector3();
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, AvoidRadius, GameManager.Instance.PredatorLayer);
+        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, AvoidRadius, PredatorMask);
 
         for (int i = 0; i < enemies.Length; ++i)
         {
@@ -189,4 +218,13 @@ public abstract class FlockingAgent : MonoBehaviour
 
         return (targetInWorldSpace - transform.position).normalized;
     }
+
+#if UNITY_EDITOR
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, CohesionRadius);
+    //}
+
+#endif
 }

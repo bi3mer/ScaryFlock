@@ -7,12 +7,15 @@ public class FlockManager : Singleton<FlockManager>
     private Dictionary<string, FlockingAgent> flock = new Dictionary<string, FlockingAgent>();
     private int key = int.MinValue;
 
+    public int FlockCount { get; private set; }
+
     [SerializeField]
     private Score scoreUI;
 
     private void Awake()
     {
         Assert.IsNotNull(scoreUI);
+        FlockCount = 0;
     }
 
     public void Reset()
@@ -24,6 +27,7 @@ public class FlockManager : Singleton<FlockManager>
 
         flock.Clear();
         key = int.MinValue;
+        FlockCount = 0;
     }
 
     public void AddAgent(FlockingAgent agent)
@@ -32,14 +36,16 @@ public class FlockManager : Singleton<FlockManager>
 
         flock.Add(agent.name, agent);
         ++key;
+        ++FlockCount;
 
-        scoreUI.UpdateScore();
+        scoreUI.UpdateScore(FlockCount);
     }
 
     public void RemoveAgent(string id)
     {
         flock.Remove(id);
-        scoreUI.UpdateScore();
+        --FlockCount;
+        scoreUI.UpdateScore(FlockCount);
     }
 
     public FlockingAgent Get(string id)

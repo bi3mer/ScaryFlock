@@ -13,10 +13,10 @@ GameObject:
   - component: {fileID: 5807397070432244193}
   - component: {fileID: 7801854213338278485}
   - component: {fileID: -3499116934539675914}
-  - component: {fileID: -1979829001900732366}
+  - component: {fileID: 8400188471102472646}
   m_Layer: 0
   m_Name: Predator
-  m_TagString: Untagged
+  m_TagString: predator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -92,13 +92,13 @@ Rigidbody2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8067168371378446905}
   m_BodyType: 0
-  m_Simulated: 0
+  m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -114,7 +114,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.0026631355, y: 0}
@@ -132,21 +132,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eebdc275537700346af0e70612b9c996, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CohesionRadius: 0
-  SeparationRadius: 0
-  AllignmentRadius: 0
-  WanderRadius: 0
-  AvoidRadius: 0
-  CohesionWeight: 0
-  SeparationWeight: 0
-  AllignmentWeight: 0
-  WanderWeight: 0
-  AvoidWeight: 0
-  MaxAcceleration: 0
-  MaxVelocity: 0
-  Jitter: 0
-  WanderDistanceRadius: 0
---- !u!114 &-1979829001900732366
+  isPredator: 1
+  CohesionRadius: 3.13
+  SeparationRadius: 0.28
+  AllignmentRadius: 1
+  WanderRadius: 1
+  AvoidRadius: 1
+  CohesionWeight: 45.81
+  SeparationWeight: 14.54
+  AllignmentWeight: 2.55
+  WanderWeight: 8.84
+  AvoidWeight: 6.3
+  Jitter: 6.32
+  WanderDistanceRadius: 1.24
+--- !u!114 &8400188471102472646
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,20 +154,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 8067168371378446905}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eebdc275537700346af0e70612b9c996, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f61bd8face6b4249957b555955e3164, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CohesionRadius: 0
-  SeparationRadius: 0
-  AllignmentRadius: 0
-  WanderRadius: 0
-  AvoidRadius: 0
-  CohesionWeight: 0
-  SeparationWeight: 0
-  AllignmentWeight: 0
-  WanderWeight: 0
-  AvoidWeight: 0
-  MaxAcceleration: 0
-  MaxVelocity: 0
-  Jitter: 0
-  WanderDistanceRadius: 0

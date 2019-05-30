@@ -26,11 +26,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private bool startOnStart = false;
 
-    private LayerMask predatorLayer;
-
     public int PreyCount { get; private set; }
     public int Score { get; private set; }
-    public LayerMask PredatorLayer => predatorLayer;
 
     private Vector3 RandomInRectWorldPosition()
     {
@@ -43,15 +40,15 @@ public class GameManager : Singleton<GameManager>
         Assert.IsNotNull(prey);
         Assert.IsNotNull(predator);
         Assert.IsNotNull(player);
-
-        predatorLayer = LayerMask.NameToLayer("predator");
-
-        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
-        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
     }
 
     private void Start()
     {
+        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
+        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
+        FlockingAgent.PredatorMask = LayerMask.NameToLayer("predator");
+        FlockingAgent.FriendlyMask = LayerMask.GetMask("prey", "player");
+
         if (startOnStart)
         {
             RestartGame();
@@ -83,7 +80,6 @@ public class GameManager : Singleton<GameManager>
         {
             tempInstantiator = Instantiate(predator);
             tempInstantiator.transform.position = RandomInRectWorldPosition();
-            tempInstantiator.RandomizeWeights();
 
             FlockManager.Instance.AddAgent(tempInstantiator);
         }
@@ -95,5 +91,4 @@ public class GameManager : Singleton<GameManager>
 
         FlockManager.Instance.AddAgent(tempInstantiator);
     }
-
 }
