@@ -61,6 +61,7 @@ public class GameManager : Singleton<GameManager>
         Score = 0;
         PreyCount = 0;
         FlockManager.Instance.Reset();
+        EvolutionManager.Reset();
 
         // Spawn new agents into the world
         FlockingAgent tempInstantiator;

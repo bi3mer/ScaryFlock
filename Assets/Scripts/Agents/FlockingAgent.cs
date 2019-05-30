@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// TODO: reduce the turn radius
 public abstract class FlockingAgent : MonoBehaviour
 {
     private readonly float maxRadius = 1.5f;
