@@ -45,6 +45,9 @@ public class GameManager : Singleton<GameManager>
         Assert.IsNotNull(player);
 
         predatorLayer = LayerMask.NameToLayer("predator");
+
+        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
+        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
     }
 
     private void Start()
@@ -57,17 +60,12 @@ public class GameManager : Singleton<GameManager>
 
     public void RestartGame()
     {
-        // kill past children and reset manager
-        FlockManager.Instance.Reset();
-
         // reset the scorevariables keeping track of past events
         Score = 0;
         PreyCount = 0;
+        FlockManager.Instance.Reset();
 
         // Spawn new agents into the world
-        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
-        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
-
         FlockingAgent tempInstantiator;
         int i;
         for (i = 0; i < startingPreyCount; ++i)
@@ -75,6 +73,7 @@ public class GameManager : Singleton<GameManager>
             tempInstantiator = Instantiate(prey);
             tempInstantiator.transform.position = RandomInRectWorldPosition();
             tempInstantiator.RandomizeWeights();
+            ++PreyCount;
             
             FlockManager.Instance.AddAgent(tempInstantiator);
 
