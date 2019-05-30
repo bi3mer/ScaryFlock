@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System;
 
+// TODO: instead of this just prevent two parents from ever mating together again and live a better life
 public static class EvolutionManager
 {
     private static HashSet<string> touchedIds = new HashSet<string>();
@@ -43,11 +45,29 @@ public static class EvolutionManager
 
     private static void CreateNewPreyFromPrey(string id1, string id2)
     {
-        UnityEngine.Debug.Log("Creating prey form prey");
+        Evolution.Run(
+            GameManager.Instance.Prey,
+            FlockManager.Instance.Get(id1),
+            FlockManager.Instance.Get(id2));
     }
 
     private static void CreateNewPreyFromPlayer(string id1, string id2)
     {
-        UnityEngine.Debug.Log("Creating prey from player");
+        FlockingAgent agent1 = FlockManager.Instance.Get(id1);
+        FlockingAgent agent2 = FlockManager.Instance.Get(id2);
+        FlockingAgent parentPrey;
+
+        if (agent1.name.Equals(Tag.Prey, StringComparison.Ordinal))
+        {
+            parentPrey = agent1;
+        }
+        else
+        {
+            parentPrey = agent2;
+        }
+
+        ((OnUpdateFlockingAgent)parentPrey).AgentMated();
+        FlockingAgent newAgent = UnityEngine.Object.Instantiate(parentPrey);
+        FlockManager.Instance.AddAgent(newAgent);
     }
 }

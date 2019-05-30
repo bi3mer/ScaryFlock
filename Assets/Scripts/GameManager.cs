@@ -28,6 +28,7 @@ public class GameManager : Singleton<GameManager>
 
     public int PreyCount { get; private set; }
     public int Score { get; private set; }
+    public FlockingAgent Prey => prey;
 
     private Vector3 RandomInRectWorldPosition()
     {
