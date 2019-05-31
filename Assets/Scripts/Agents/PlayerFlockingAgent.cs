@@ -1,18 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.Assertions;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerFlockingAgent : FlockingAgent
 {
-    // Start is called before the first frame update
-    void Start()
+    private Rigidbody2D rb;
+
+    private void Awake()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
+        Assert.IsNotNull(rb);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        rb.AddForce(new Vector2(Input.GetAxis("Horizontal") / 200f, Input.GetAxis("Vertical") / 200f));
+        rb.velocity = rb.velocity.normalized;
+        KeepInBounds();
     }
 }

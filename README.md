@@ -1,5 +1,11 @@
 # Game AI School 2019 Jam Game
 
+## Main Menu
+
+To make the main menu look atleast a bit polished I took spawning code I wrote for the main game and added a boolean that represents whether we are in the menu scene or the game scene. In the menu scene, colliders are turned off and predator spawning is turned off so the number of agents present on the screen is static. The text looks pretty bad but oh well.
+
+![](./media/main_menu.gif)
+
 ## Problems
 
 ### Insane Prey Spawn Rate

@@ -234,9 +234,11 @@ MonoBehaviour:
   predator: {fileID: -3499116934539675914, guid: 00d4e43355b2ece498de4c29e9074a91,
     type: 3}
   player: {fileID: -5998827449507584195, guid: 3dbad55fc94dd3b4086beaf1f7b3f0ea, type: 3}
-  startingPreyCount: 111
-  startingPredatorCount: 3
+  startingPreyCount: 50
+  startingPredatorCount: 1
   startOnStart: 1
+  maxSpawned: 500
+  secondsTillPredatorSpawns: 16
 --- !u!114 &311682485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,7 +421,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 49.35
+  m_fontSize: 60.8
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

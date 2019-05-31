@@ -50,7 +50,11 @@ public class FlockManager : Singleton<FlockManager>
 
     public FlockingAgent Get(string id)
     {
-        Assert.IsTrue(flock.ContainsKey(id));
-        return flock[id];
+        if (flock.ContainsKey(id))
+        {
+            return flock[id];
+        }
+
+        return null;
     }
 }

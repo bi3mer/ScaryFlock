@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7801854213338278485}
   - component: {fileID: -3499116934539675914}
   - component: {fileID: 8400188471102472646}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Predator
   m_TagString: predator
   m_Icon: {fileID: 0}
@@ -145,6 +145,7 @@ MonoBehaviour:
   AvoidWeight: 6.3
   Jitter: 6.32
   WanderDistanceRadius: 1.24
+  maxMates: 3
 --- !u!114 &8400188471102472646
 MonoBehaviour:
   m_ObjectHideFlags: 0

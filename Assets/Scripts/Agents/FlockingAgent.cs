@@ -39,7 +39,7 @@ public abstract class FlockingAgent : MonoBehaviour
 
 
     public Vector2 Velocity { get; private set; }
-    public Vector2 Acceleration { get; private set; }
+    public Vector2 Acceleration { get; protected set; }
     private Vector3 wanderTarget;
 
     private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
@@ -109,15 +109,8 @@ public abstract class FlockingAgent : MonoBehaviour
         Jitter = newWeights[11];
     }
 
-    public void OnUpdate()
+    protected void KeepInBounds()
     {
-        // run flocking 
-        Vector2 temp = Combine();
-        Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
-        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
-        transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
-
-        // Keep agent in world bounds
         float x = transform.position.x;
         float y = transform.position.y;
         float z = transform.position.z;
@@ -125,6 +118,16 @@ public abstract class FlockingAgent : MonoBehaviour
         if (x > WorldMax.x) transform.position = new Vector3(WorldMax.x, y, z);
         if (y < WorldMin.y) transform.position = new Vector3(transform.position.x, WorldMin.y, z);
         if (y > WorldMax.y) transform.position = new Vector3(transform.position.x, WorldMax.y, z);
+    }
+
+    public void OnUpdate()
+    {
+        // run flocking 
+        Vector2 temp = Acceleration + Combine();
+        Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
+        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
+        transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
+        KeepInBounds();
 
         // set agent alignment 
         if (Velocity.magnitude > 0)
