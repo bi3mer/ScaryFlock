@@ -16,7 +16,7 @@ public class FlockManager : Singleton<FlockManager>
     {
         foreach (KeyValuePair<string, FlockingAgent> kvp in flock)
         {
-            Destroy(kvp.Value);
+            Destroy(kvp.Value.gameObject);
         }
 
         flock.Clear();

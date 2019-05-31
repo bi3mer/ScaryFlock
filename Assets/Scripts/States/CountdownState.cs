@@ -13,6 +13,7 @@ public class CountdownState : TriggeringState<Trigger>
 
     protected override void OnStateEnter()
     {
+        GameManager.Instance.HideScoreUI();
         time = countdown;
         Text.enabled = true;
     }

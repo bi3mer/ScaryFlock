@@ -167,19 +167,6 @@ public abstract class FlockingAgent : MonoBehaviour
         }
         else
         {
-            Debug.Log(Cohesion(friendPositions));
-            Debug.Log(Separation(enemyPositions, friendPositions));
-            Debug.Log(Allignment(friendVelocities));
-
-            Debug.Log(CohesionWeight * Cohesion(friendPositions));
-            Debug.Log(SeparationWeight * Separation(enemyPositions, friendPositions));
-            Debug.Log(AllignmentWeight * Allignment(friendVelocities));
-
-            if (Random.RandomRange(0f, 1f) < 0.05f)
-            {
-                Debug.Log("wow");
-            }
-
             return CohesionWeight * Cohesion(friendPositions) +
                 SeparationWeight * Separation(enemyPositions, friendPositions) +
                 AllignmentWeight * Allignment(friendVelocities);

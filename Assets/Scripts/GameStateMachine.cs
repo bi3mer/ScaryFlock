@@ -4,15 +4,19 @@ using TMPro;
 
 using BGC.StateMachine;
 
-public class GameStateMachine : MonoBehaviour
+public class GameStateMachine : Singleton<GameStateMachine>
 {
     private StateMachine<Bool, Trigger> sm = new StateMachine<Bool, Trigger>();
 
     [SerializeField]
     private TextMeshProUGUI scoreText = null;
 
+    [SerializeField]
+    private ScoreScreen scoreScreen = null;
+
     private void Awake()
     {
+        Assert.IsNotNull(scoreScreen);
         Assert.IsNotNull(scoreText);
     }
 
@@ -23,6 +27,7 @@ public class GameStateMachine : MonoBehaviour
             name: "game",
             onStateEnter: () =>
             {
+                GameManager.Instance.ShowScoreUI();
                 GameManager.Instance.RestartGame();
                 return null;
             });
@@ -30,7 +35,12 @@ public class GameStateMachine : MonoBehaviour
             name: "score screen",
             onStateEnter: () =>
             {
-                Debug.Log("Show a score!");
+                int score = GameManager.Instance.Score;
+                GameManager.Instance.HideScoreUI();
+                GameManager.Instance.Reset();
+                GameManager.Instance.gameObject.SetActive(false);
+                this.scoreScreen.SetScore(score);
+                this.scoreScreen.gameObject.SetActive(true);
             });
 
         countDownState.Text = scoreText;
@@ -48,5 +58,11 @@ public class GameStateMachine : MonoBehaviour
     private void Update()
     {
         sm.Update();
+    }
+
+    // @NOTE: you shouldn't do this, I just don't have a ton of time and I'm tired
+    public void GotoNextState()
+    {
+        sm.ActivateTriggerDeferred(Trigger.NextState);
     }
 }

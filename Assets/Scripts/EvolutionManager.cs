@@ -8,7 +8,7 @@ using UnityEngine;
 public static class EvolutionManager
 {
     private static readonly HashSet<string> touchedIds = new HashSet<string>();
-    private const float playerMateCoolDown = 0.5f;
+    private const float playerMateCoolDown = 0.001f;
     private const float preyMateCoolDoown = 5f;
 
     public static void Reset()

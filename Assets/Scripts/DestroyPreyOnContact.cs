@@ -7,7 +7,7 @@ public class DestroyPreyOnContact : MonoBehaviour
     {
         if (col.gameObject.tag.Equals(Tag.Player, StringComparison.Ordinal))
         {
-            Debug.Log("Game Over");
+            GameStateMachine.Instance.GotoNextState();
         }
         else if (col.gameObject.tag.Equals(Tag.Prey, StringComparison.Ordinal))
         {
