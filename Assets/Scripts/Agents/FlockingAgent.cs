@@ -1,30 +1,29 @@
-﻿using UnityEngine.Assertions;
+﻿using System.Collections.Generic;
+
+using UnityEngine.Assertions;
 using UnityEngine;
 
-// TODO: reduce the turn radius
 public abstract class FlockingAgent : MonoBehaviour
 {
-    public const int ParameterSpace = 12;
+    public const int ParameterSpace = 7;
 
-    private readonly float maxRadius = 1.5f;
+    private readonly float maxRadius = 0.8f;
     private readonly float maxWeight = 100;
 
     public static Vector2 WorldMin;
     public static Vector2 WorldMax;
     public static LayerMask PredatorMask;
     public static LayerMask FriendlyMask;
+    public static LayerMask AllMask;
 
     private float maxAcceleration = 3;
     private float maxVelocity = 1;
     private float predatorMaxVelocity = 2;
     public bool isPredator = false;
+    private float updateOnFrameDivisibleBy;
 
     [Header("Radius")]
-    public float CohesionRadius;
-    public float SeparationRadius;
-    public float AllignmentRadius;
-    public float WanderRadius;
-    public float AvoidRadius;
+    public float SearchRadius;
 
     [Header("Weight")]
     public float CohesionWeight;
@@ -35,24 +34,16 @@ public abstract class FlockingAgent : MonoBehaviour
 
     [Header("Smoothing Movement")]
     public float Jitter;
-    public float WanderDistanceRadius;
-
 
     public Vector2 Velocity { get; private set; }
     public Vector2 Acceleration { get; protected set; }
     private Vector3 wanderTarget;
 
-    private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
     public float MaxRadius => maxRadius;
     public float MaxWeight => maxWeight;
 
     public float[] Weights => new float[] {
-        CohesionRadius,
-        SeparationRadius,
-        AllignmentRadius,
-        WanderRadius,
-        AvoidRadius,
-        WanderDistanceRadius,
+        SearchRadius,
         CohesionWeight,
         SeparationWeight,
         AllignmentWeight,
@@ -60,6 +51,18 @@ public abstract class FlockingAgent : MonoBehaviour
         AvoidWeight,
         Jitter
     };
+
+    private void Awake()
+    {
+        if (isPredator)
+        {
+            updateOnFrameDivisibleBy = 1;
+        }
+        else
+        {
+            updateOnFrameDivisibleBy = Random.Range(1, 5);
+        }
+    }
 
     private void Start()
     {
@@ -73,12 +76,7 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public void RandomizeWeights()
     {
-        CohesionRadius = Random.Range(0, maxRadius);
-        SeparationRadius = Random.Range(0, maxRadius);
-        AllignmentRadius = Random.Range(0, maxRadius);
-        WanderRadius = Random.Range(0, maxRadius);
-        AvoidRadius = Random.Range(0, maxRadius);
-        WanderDistanceRadius = Random.Range(0, maxRadius);
+        SearchRadius = Random.Range(0, maxRadius);
 
         CohesionWeight = Random.Range(0, maxWeight);
         SeparationWeight = Random.Range(0, maxWeight);
@@ -93,20 +91,13 @@ public abstract class FlockingAgent : MonoBehaviour
         Assert.IsNotNull(newWeights);
         Assert.IsTrue(newWeights.Length == ParameterSpace);
 
-        CohesionRadius = newWeights[0];
-        SeparationRadius = newWeights[1];
-        AllignmentRadius = newWeights[2];
-        WanderRadius = newWeights[3];
-        AvoidRadius = newWeights[4];
-        WanderDistanceRadius = newWeights[5];
-
-        CohesionWeight = newWeights[6];
-        SeparationWeight = newWeights[7];
-        AllignmentWeight = newWeights[8];
-        WanderWeight = newWeights[9];
-        AvoidWeight = newWeights[10];
-
-        Jitter = newWeights[11];
+        SearchRadius = newWeights[0];
+        CohesionWeight = newWeights[1];
+        SeparationWeight = newWeights[2];
+        AllignmentWeight = newWeights[3];
+        WanderWeight = newWeights[4];
+        AvoidWeight = newWeights[5];
+        Jitter = newWeights[6];
     }
 
     protected void KeepInBounds()
@@ -122,8 +113,34 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public void OnUpdate()
     {
-        // run flocking 
-        Vector2 temp = Acceleration + Combine();
+        // optimzation problems so lets stop the agents from being able to update every frame and 
+        // do a lot of work every frame
+        if (Time.frameCount % updateOnFrameDivisibleBy != 0) return;
+
+        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SearchRadius, AllMask);
+
+        List<Vector3> enemyPositions = new List<Vector3>();
+        List<Vector3> friendPositions = new List<Vector3>();
+        List<Vector2> friendVelocities = new List<Vector2>();
+
+        FlockManager flock = FlockManager.Instance;
+        Collider2D neighbor;
+        for (int i = 0; i < neighbors.Length; ++i)
+        {
+            neighbor = neighbors[i];
+
+            if (neighbor.tag.Equals(Tag.Predator))
+            {
+                enemyPositions.Add(neighbor.transform.position);
+            }
+            else
+            {
+                friendPositions.Add(neighbor.transform.position);
+                friendVelocities.Add(flock.Get(neighbor.name).Velocity);
+            }
+        }
+
+        Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
         Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
         Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
         transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
@@ -137,37 +154,62 @@ public abstract class FlockingAgent : MonoBehaviour
         }
     }
 
-    protected Vector2 Combine()
+    private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
+
+    private Vector2 Combine(List<Vector3> enemyPositions, List<Vector3> friendPositions, List<Vector2> friendVelocities)
     {
-        if (isPredator)
+        if (!isPredator)
         {
-            return CohesionWeight * Cohesion() +
-                SeparationWeight * Separation() +
-                AllignmentWeight * Allignment() +
-                WanderWeight * Wander() +
-                AvoidWeight * Avoid();
+            return CohesionWeight * Cohesion(friendPositions) +
+                SeparationWeight * Separation(enemyPositions, friendPositions) +
+                AllignmentWeight * Allignment(friendVelocities) +
+                AvoidWeight * Avoid(enemyPositions);
         }
         else
         {
-            return CohesionWeight * Cohesion() +
-                SeparationWeight * Separation() +
-                AllignmentWeight * Allignment() +
-                WanderWeight * Wander();
+            Debug.Log(Cohesion(friendPositions));
+            Debug.Log(Separation(enemyPositions, friendPositions));
+            Debug.Log(Allignment(friendVelocities));
+
+            Debug.Log(CohesionWeight * Cohesion(friendPositions));
+            Debug.Log(SeparationWeight * Separation(enemyPositions, friendPositions));
+            Debug.Log(AllignmentWeight * Allignment(friendVelocities));
+
+            if (Random.RandomRange(0f, 1f) < 0.05f)
+            {
+                Debug.Log("wow");
+            }
+
+            return CohesionWeight * Cohesion(friendPositions) +
+                SeparationWeight * Separation(enemyPositions, friendPositions) +
+                AllignmentWeight * Allignment(friendVelocities);
         }
     }
 
-    protected Vector2 Cohesion()
+    private Vector2 Wander()
+    {
+        float jitter = Weights[11] * Time.deltaTime;
+        wanderTarget += new Vector3(RandomBinomial * jitter, RandomBinomial * jitter, 0);
+
+        wanderTarget.Normalize();
+        wanderTarget *= Weights[6];
+        Vector3 targetInLocalSpace = wanderTarget + new Vector3(0, 0, Weights[6]);
+        Vector3 targetInWorldSpace = transform.TransformPoint(targetInLocalSpace);
+
+        return (targetInWorldSpace - transform.position).normalized;
+    }
+
+    private Vector2 Cohesion(List<Vector3> friendPositions)
     {
         Vector3 result = new Vector3();
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, CohesionRadius, FriendlyMask);
 
-        if (neighbors.Length > 0)
+        if (friendPositions.Count > 0)
         {
             int agentCount = 0;
 
-            for (int i = 0; i < neighbors.Length; ++i)
+            for (int i = 0; i < friendPositions.Count; ++i)
             {
-                result += neighbors[i].transform.position;
+                result += friendPositions[i];
                 ++agentCount;
             }
 
@@ -183,23 +225,29 @@ public abstract class FlockingAgent : MonoBehaviour
         return result;
     }
 
-    protected Vector2 Separation()
+    private Vector2 Separation(List<Vector3> enemyPositions, List<Vector3> friendPositions)
     {
         Vector2 result = new Vector3();
-        Collider2D[] neighbors;
+
+        List<Vector3> positions;
 
         if (isPredator)
         {
-            neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, PredatorMask);
+            positions = enemyPositions;
+
+            if (positions.Count == 0)
+            {
+                return new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            }
         }
         else
         {
-            neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, FriendlyMask);
+            positions = friendPositions;
         }
 
-        for (int i = 0; i < neighbors.Length; ++i)
+        for (int i = 0; i < positions.Count; ++i)
         {
-            Vector3 towardsMe = transform.position - neighbors[i].transform.position;
+            Vector3 towardsMe = transform.position - positions[i];
 
             if (towardsMe.magnitude > 0)
             {
@@ -212,16 +260,15 @@ public abstract class FlockingAgent : MonoBehaviour
         return result;
     }
 
-    protected Vector2 Allignment()
+    private Vector2 Allignment(List<Vector2> friendVelocities)
     {
         Vector2 result = new Vector2();
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SeparationRadius, FriendlyMask);
 
-        if (neighbors.Length > 0)
+        if (friendVelocities.Count > 0)
         {
-            for (int i = 0; i < neighbors.Length; ++i)
+            for (int i = 0; i < friendVelocities.Count; ++i)
             {
-                result += FlockManager.Instance.Get(neighbors[i].name).Velocity;
+                result += friendVelocities[i];
             }
 
             result.Normalize();
@@ -230,43 +277,29 @@ public abstract class FlockingAgent : MonoBehaviour
         return result;
     }
 
-    public Vector2 Flee(Vector3 targ)
+    private Vector2 Flee(Vector3 targ)
     {
         Vector2 desiredVel = (transform.position - targ).normalized * maxVelocity;
         return desiredVel - Velocity;
     }
 
-    public Vector2 Avoid()
+    public Vector2 Avoid(List<Vector3> enemyPositions)
     {
         Vector2 result = new Vector3();
-        Collider2D[] enemies = Physics2D.OverlapCircleAll(transform.position, AvoidRadius, PredatorMask);
 
-        for (int i = 0; i < enemies.Length; ++i)
+        for (int i = 0; i < enemyPositions.Count; ++i)
         {
-            result += Flee(enemies[i].transform.position);
+            result += Flee(enemyPositions[i]);
         }
 
         return result;
     }
 
-    public Vector2 Wander()
-    {
-        float jitter = Jitter * Time.deltaTime;
-        wanderTarget += new Vector3(RandomBinomial * jitter, RandomBinomial * jitter, 0);
-
-        wanderTarget.Normalize();
-        wanderTarget *= WanderRadius;
-        Vector3 targetInLocalSpace = wanderTarget + new Vector3(0, 0, WanderDistanceRadius);
-        Vector3 targetInWorldSpace = transform.TransformPoint(targetInLocalSpace);
-
-        return (targetInWorldSpace - transform.position).normalized;
-    }
-
 #if UNITY_EDITOR
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, CohesionRadius);
-    //}
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, SearchRadius);
+    }
 #endif
 }

@@ -6,7 +6,7 @@ public class OnUpdateFlockingAgent : FlockingAgent
     private int maxMates = 3;
 
     private int matedCount = 0;
-    public int MatedCount => matedCount;
+    public int MatedCount { get; private set; }
 
     public void AgentMated()
     {

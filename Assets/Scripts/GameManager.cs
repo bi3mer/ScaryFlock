@@ -37,9 +37,13 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private bool isMainMenu = false;
 
+    [SerializeField]
+    private Score scoreUI;
+
     private float time;
 
     public int Score { get; private set; }
+    public int PredatorCount { get; private set; }
     public int MaxSpawnCount => maxSpawned;
     public FlockingAgent Prey => prey;
 
@@ -58,10 +62,11 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0f, 0f));
-        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(1f, 1f));
+        FlockingAgent.WorldMin = Camera.main.ViewportToWorldPoint(new Vector2(0.02f, 0.02f));
+        FlockingAgent.WorldMax = Camera.main.ViewportToWorldPoint(new Vector2(0.98f, 0.98f));
         FlockingAgent.PredatorMask = LayerMask.NameToLayer(Tag.Predator);
         FlockingAgent.FriendlyMask = LayerMask.GetMask(Tag.Prey, Tag.Player);
+        FlockingAgent.AllMask = LayerMask.GetMask(Tag.Prey, Tag.Player, Tag.Predator);
 
         if (startOnStart)
         {
@@ -73,7 +78,6 @@ public class GameManager : Singleton<GameManager>
     {
         if(!isMainMenu)
         {
-
             time += Time.deltaTime;
 
             if (time > secondsTillPredatorSpawns)
@@ -117,6 +121,7 @@ public class GameManager : Singleton<GameManager>
 
         agent.transform.position = new Vector3(agent.transform.position.x, agent.transform.position.y, 0);
         FlockManager.Instance.AddAgent(agent);
+        ++PredatorCount;
 
         return agent;
     }
@@ -126,6 +131,7 @@ public class GameManager : Singleton<GameManager>
         // reset the scorevariables keeping track of past events
         time = 0f;
         Score = 0;
+        PredatorCount = startingPredatorCount;
 
         if (!isMainMenu)
         {
@@ -168,5 +174,11 @@ public class GameManager : Singleton<GameManager>
             
             FlockManager.Instance.AddAgent(tempInstantiator);
         }
+    }
+
+    public void UpdateScore()
+    {
+        Score += PredatorCount;
+        scoreUI.UpdateScore(Score);
     }
 }

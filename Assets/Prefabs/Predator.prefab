@@ -133,18 +133,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPredator: 1
-  CohesionRadius: 3.13
-  SeparationRadius: 0.28
-  AllignmentRadius: 1
-  WanderRadius: 1
-  AvoidRadius: 1
+  SearchRadius: 1.5
   CohesionWeight: 34.12
   SeparationWeight: 14.54
   AllignmentWeight: 2.55
   WanderWeight: 8.84
   AvoidWeight: 6.3
   Jitter: 6.32
-  WanderDistanceRadius: 1.24
   maxMates: 3
 --- !u!114 &8400188471102472646
 MonoBehaviour:

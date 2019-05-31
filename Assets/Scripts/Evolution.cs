@@ -16,7 +16,7 @@ public static class Evolution
         for (int i = 0; i < FlockingAgent.ParameterSpace; ++i)
         {
             float maxVal;
-            if (i < 6)
+            if (i == 0)
             {
                 maxVal = parent1.MaxRadius;
             }

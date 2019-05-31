@@ -205,7 +205,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 56.3
+  m_fontSize: 59.05
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -852,11 +852,12 @@ MonoBehaviour:
     type: 3}
   player: {fileID: -5998827449507584195, guid: 3dbad55fc94dd3b4086beaf1f7b3f0ea, type: 3}
   startingPreyCount: 89
-  startingPredatorCount: 0
-  startOnStart: 0
+  startingPredatorCount: 1
+  startOnStart: 1
   maxSpawned: 800
   secondsTillPredatorSpawns: 30
   isMainMenu: 1
+  scoreUI: {fileID: 0}
 --- !u!4 &2068952379
 Transform:
   m_ObjectHideFlags: 0

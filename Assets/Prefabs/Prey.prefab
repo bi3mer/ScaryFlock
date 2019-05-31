@@ -133,18 +133,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPredator: 0
-  CohesionRadius: 0
-  SeparationRadius: 0
-  AllignmentRadius: 0
-  WanderRadius: 0
-  AvoidRadius: 0
-  CohesionWeight: 0
-  SeparationWeight: 0
-  AllignmentWeight: 0
-  WanderWeight: 0
-  AvoidWeight: 0
-  Jitter: 0
-  WanderDistanceRadius: 0
+  SearchRadius: 1.5
+  CohesionWeight: 30
+  SeparationWeight: 15
+  AllignmentWeight: 5
+  WanderWeight: 10
+  AvoidWeight: 1
+  Jitter: 6
   maxMates: 3
 --- !u!114 &-1126770460926493244
 MonoBehaviour:
@@ -158,3 +153,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8c538ac43a9da246ba5048cc9792ca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isPlayer: 0

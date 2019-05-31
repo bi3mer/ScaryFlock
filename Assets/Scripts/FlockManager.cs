@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine.Assertions;
-using UnityEngine;
 
 public class FlockManager : Singleton<FlockManager>
 {
@@ -9,12 +7,8 @@ public class FlockManager : Singleton<FlockManager>
 
     public int FlockCount { get; private set; }
 
-    [SerializeField]
-    private Score scoreUI;
-
     private void Awake()
     {
-        Assert.IsNotNull(scoreUI);
         FlockCount = 0;
     }
 
@@ -37,15 +31,12 @@ public class FlockManager : Singleton<FlockManager>
         flock.Add(agent.name, agent);
         ++key;
         ++FlockCount;
-
-        scoreUI.UpdateScore(FlockCount);
     }
 
     public void RemoveAgent(string id)
     {
         flock.Remove(id);
         --FlockCount;
-        scoreUI.UpdateScore(FlockCount);
     }
 
     public FlockingAgent Get(string id)
