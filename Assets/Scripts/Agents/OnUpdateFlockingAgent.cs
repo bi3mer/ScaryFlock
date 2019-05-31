@@ -3,13 +3,16 @@
 public class OnUpdateFlockingAgent : FlockingAgent
 {
     [SerializeField]
-    private int lives = 3;
+    private int maxMates = 3;
+
+    private int matedCount = 0;
+    public int MatedCount => matedCount;
 
     public void AgentMated()
     {
-        --lives;
+        ++matedCount;
 
-        if (lives <= 0)
+        if (matedCount >= maxMates)
         {
             FlockManager.Instance.RemoveAgent(name);
             Destroy(gameObject);

@@ -26,8 +26,12 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private bool startOnStart = false;
 
-    public int PreyCount { get; private set; }
+    [SerializeField]
+    [Range(10, 1500)]
+    private int maxSpawned = 800;
+
     public int Score { get; private set; }
+    public int MaxSpawnCount => maxSpawned;
     public FlockingAgent Prey => prey;
 
     private Vector3 RandomInRectWorldPosition()
@@ -56,11 +60,19 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public FlockingAgent CreateNewPrey()
+    {
+        FlockingAgent agent = Instantiate(prey);
+        agent.transform.position = RandomInRectWorldPosition();
+        FlockManager.Instance.AddAgent(agent);
+
+        return agent;
+    }
+
     public void RestartGame()
     {
         // reset the scorevariables keeping track of past events
         Score = 0;
-        PreyCount = 0;
         FlockManager.Instance.Reset();
         EvolutionManager.Reset();
 
@@ -72,7 +84,6 @@ public class GameManager : Singleton<GameManager>
             tempInstantiator = Instantiate(prey);
             tempInstantiator.transform.position = RandomInRectWorldPosition();
             tempInstantiator.RandomizeWeights();
-            ++PreyCount;
             
             FlockManager.Instance.AddAgent(tempInstantiator);
 

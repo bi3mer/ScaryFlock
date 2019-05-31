@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using UnityEngine.Assertions;
+using UnityEngine;
 
 // TODO: reduce the turn radius
 public abstract class FlockingAgent : MonoBehaviour
 {
+    public const int ParameterSpace = 12;
+
     private readonly float maxRadius = 1.5f;
     private readonly float maxWeight = 100;
 
@@ -37,10 +40,26 @@ public abstract class FlockingAgent : MonoBehaviour
 
     public Vector2 Velocity { get; private set; }
     public Vector2 Acceleration { get; private set; }
+    private Vector3 wanderTarget;
 
     private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
+    public float MaxRadius => maxRadius;
+    public float MaxWeight => maxWeight;
 
-    private Vector3 wanderTarget;
+    public float[] Weights => new float[] {
+        CohesionRadius,
+        SeparationRadius,
+        AllignmentRadius,
+        WanderRadius,
+        AvoidRadius,
+        WanderDistanceRadius,
+        CohesionWeight,
+        SeparationWeight,
+        AllignmentWeight,
+        WanderWeight,
+        AvoidWeight,
+        Jitter
+    };
 
     private void Start()
     {
@@ -59,15 +78,35 @@ public abstract class FlockingAgent : MonoBehaviour
         AllignmentRadius = Random.Range(0, maxRadius);
         WanderRadius = Random.Range(0, maxRadius);
         AvoidRadius = Random.Range(0, maxRadius);
+        WanderDistanceRadius = Random.Range(0, maxRadius);
 
         CohesionWeight = Random.Range(0, maxWeight);
         SeparationWeight = Random.Range(0, maxWeight);
         AllignmentWeight = Random.Range(0, maxWeight);
         WanderWeight = Random.Range(0, maxWeight);
         AvoidWeight = Random.Range(0, maxWeight);
-
         Jitter = Random.Range(0, maxWeight);
-        WanderDistanceRadius = Random.Range(0, maxRadius);
+    }
+
+    public void UpdateWeights(float[] newWeights)
+    {
+        Assert.IsNotNull(newWeights);
+        Assert.IsTrue(newWeights.Length == ParameterSpace);
+
+        CohesionRadius = newWeights[0];
+        SeparationRadius = newWeights[1];
+        AllignmentRadius = newWeights[2];
+        WanderRadius = newWeights[3];
+        AvoidRadius = newWeights[4];
+        WanderDistanceRadius = newWeights[5];
+
+        CohesionWeight = newWeights[6];
+        SeparationWeight = newWeights[7];
+        AllignmentWeight = newWeights[8];
+        WanderWeight = newWeights[9];
+        AvoidWeight = newWeights[10];
+
+        Jitter = newWeights[11];
     }
 
     public void OnUpdate()
