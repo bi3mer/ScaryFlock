@@ -7,7 +7,10 @@ public class EvolveOnContact : MonoBehaviour
     {
         if (!col.gameObject.tag.Equals(Tag.Predator))
         {
-            EvolutionManager.RegisterContact(name, col.name, col.gameObject.tag.Equals(Tag.Player, StringComparison.Ordinal));
+            bool playerInvolved = col.gameObject.tag.Equals(Tag.Player, StringComparison.Ordinal) ||
+                                  gameObject.tag.Equals(Tag.Player, StringComparison.Ordinal);
+
+            EvolutionManager.RegisterContact(name, col.name, playerInvolved);
         }
     }
 }

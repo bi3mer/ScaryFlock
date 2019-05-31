@@ -14,16 +14,11 @@ public static class EvolutionManager
     public static void Reset()
     {
         touchedIds.Clear();
+        GameManager.Instance.StopAllCoroutines();
     }
 
     public static void RegisterContact(string baseId, string colId, bool playerInvolved)
     {
-        if (touchedIds.Contains(baseId)) return;
-        if (touchedIds.Contains(colId)) return;
-
-        touchedIds.Add(baseId);
-        touchedIds.Add(colId);
-
         if(FlockManager.Instance.FlockCount < GameManager.Instance.MaxSpawnCount)
         {
             if (playerInvolved)
@@ -39,6 +34,12 @@ public static class EvolutionManager
 
     private static void CreateNewPreyFromPrey(string id1, string id2)
     {
+        if (touchedIds.Contains(id1)) return;
+        if (touchedIds.Contains(id2)) return;
+
+        touchedIds.Add(id1);
+        touchedIds.Add(id2);
+
         FlockingAgent agent1 = FlockManager.Instance.Get(id1);
         FlockingAgent agent2 = FlockManager.Instance.Get(id2);
 
@@ -68,23 +69,33 @@ public static class EvolutionManager
             return;
         }
 
-        Debug.Log("Player mated!");
         FlockingAgent parentPrey;
+        FlockingAgent player;
 
         if (agent1.tag.Equals(Tag.Prey, StringComparison.Ordinal))
         {
             parentPrey = agent1;
-            GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(parentPrey.name, playerMateCoolDown));
+            player = agent2;
         }
         else
         {
             parentPrey = agent2;
-            GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(parentPrey.name, playerMateCoolDown));
+            player = agent1;
         }
+
+        if (touchedIds.Contains(parentPrey.name)) return;
+        if (touchedIds.Contains(player.name)) return;
 
         ((OnUpdateFlockingAgent)parentPrey).AgentMated();
         FlockingAgent newAgent = UnityEngine.Object.Instantiate(parentPrey);
         FlockManager.Instance.AddAgent(newAgent);
+
+        touchedIds.Add(player.name);
+        touchedIds.Add(newAgent.name);
+        touchedIds.Add(parentPrey.name);
+
+        GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(player.name, playerMateCoolDown));
+        GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(newAgent.name, playerMateCoolDown));
         GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(parentPrey.name, preyMateCoolDoown));
     }
 
