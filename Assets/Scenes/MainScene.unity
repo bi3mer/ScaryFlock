@@ -571,10 +571,11 @@ MonoBehaviour:
   player: {fileID: -5998827449507584195, guid: 3dbad55fc94dd3b4086beaf1f7b3f0ea, type: 3}
   ultraPredator: {fileID: 1674611723770185310, guid: fb629c935df1b97458f570a7301b4f53,
     type: 3}
+  prize: {fileID: 2359978097323448670, guid: 98e0d70795305ec46b04386fb44e7337, type: 3}
   startingPreyCount: 150
   startingPredatorCount: 1
   startOnStart: 0
-  maxSpawned: 496
+  maxSpawned: 450
   secondsTillPredatorSpawns: 15
   isMainMenu: 0
   scoreUI: {fileID: 1126916575}
@@ -1089,7 +1090,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 63.8
+  m_fontSize: 63.85
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

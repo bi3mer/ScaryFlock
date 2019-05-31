@@ -55,6 +55,9 @@ public static class EvolutionManager
             agent1.transform.position.y + UnityEngine.Random.Range(-1f, 1f),
             agent1.transform.position.z);
 
+        ((OnUpdateFlockingAgent) agent1).AgentMated();
+        ((OnUpdateFlockingAgent) agent2).AgentMated();
+
         GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(agent1.name, preyMateCoolDoown));
         GameManager.Instance.StartCoroutine(FreeAgentToMateAgain(agent2.name, preyMateCoolDoown));
     }

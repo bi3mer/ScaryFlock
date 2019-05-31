@@ -3,6 +3,7 @@
 using UnityEngine.Assertions;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public abstract class FlockingAgent : MonoBehaviour
 {
     public const int ParameterSpace = 7;
@@ -21,6 +22,7 @@ public abstract class FlockingAgent : MonoBehaviour
     private float predatorMaxVelocity = 2;
     public bool isPredator = false;
     private float updateOnFrameDivisibleBy;
+    private Rigidbody2D rb;
 
     [Header("Radius")]
     public float SearchRadius;
@@ -62,6 +64,9 @@ public abstract class FlockingAgent : MonoBehaviour
         {
             updateOnFrameDivisibleBy = Random.Range(1, 5);
         }
+
+        rb = GetComponent<Rigidbody2D>();
+        Assert.IsNotNull(rb);
     }
 
     private void Start()
@@ -105,10 +110,30 @@ public abstract class FlockingAgent : MonoBehaviour
         float x = transform.position.x;
         float y = transform.position.y;
         float z = transform.position.z;
-        if (x < WorldMin.x) transform.position = new Vector3(WorldMin.x, y, z);
-        if (x > WorldMax.x) transform.position = new Vector3(WorldMax.x, y, z);
-        if (y < WorldMin.y) transform.position = new Vector3(transform.position.x, WorldMin.y, z);
-        if (y > WorldMax.y) transform.position = new Vector3(transform.position.x, WorldMax.y, z);
+
+        if (x < WorldMin.x)
+        {
+            transform.position = new Vector3(WorldMin.x, y, z);
+            Acceleration = new Vector3(0.5f, Acceleration.y);
+        }
+
+        if (x > WorldMax.x)
+        {
+            transform.position = new Vector3(WorldMax.x, y, z);
+            Acceleration = new Vector3(-0.5f, Acceleration.y);
+        }
+
+        if (y < WorldMin.y)
+        {
+            transform.position = new Vector3(transform.position.x, WorldMin.y, z);
+            Acceleration = new Vector3(Acceleration.x, 0.5f);
+        }
+
+        if (y > WorldMax.y)
+        {
+            transform.position = new Vector3(transform.position.x, WorldMax.y, z);
+            Acceleration = new Vector3(Acceleration.x, -0.5f);
+        }
     }
 
     public void OnUpdate()
@@ -177,9 +202,9 @@ public abstract class FlockingAgent : MonoBehaviour
     {
         float jitter = Weights[11] * Time.deltaTime;
         wanderTarget += new Vector3(RandomBinomial * jitter, RandomBinomial * jitter, 0);
+        wanderTarget *= Weights[6];
 
         wanderTarget.Normalize();
-        wanderTarget *= Weights[6];
         Vector3 targetInLocalSpace = wanderTarget + new Vector3(0, 0, Weights[6]);
         Vector3 targetInWorldSpace = transform.TransformPoint(targetInLocalSpace);
 

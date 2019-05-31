@@ -3,7 +3,7 @@
 public class OnUpdateFlockingAgent : FlockingAgent
 {
     [SerializeField]
-    private int maxMates = 3;
+    private int maxMates = 10;
 
     private int matedCount = 0;
     public int MatedCount { get; private set; }

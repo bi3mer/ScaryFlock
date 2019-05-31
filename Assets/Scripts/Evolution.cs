@@ -11,7 +11,7 @@ public static class Evolution
         float[] parent2Weights = parent2.Weights;
         float[] parameters = new float[FlockingAgent.ParameterSpace];
 
-        float parent1Likelihood = parent1.MatedCount / (float) (parent1.MatedCount + parent2.MatedCount);
+        float parent1Likelihood = (parent1.MatedCount + 1 )/ (float) (parent1.MatedCount + parent2.MatedCount + 2);
 
         for (int i = 0; i < FlockingAgent.ParameterSpace; ++i)
         {

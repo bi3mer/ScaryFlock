@@ -19,6 +19,9 @@ public class GameManager : Singleton<GameManager>
     private FlockingAgent ultraPredator = null;
 
     [SerializeField]
+    private GameObject prize = null;
+
+    [SerializeField]
     [Range(0, 500)]
     private int startingPreyCount = 50;
 
@@ -50,6 +53,8 @@ public class GameManager : Singleton<GameManager>
     public Transform Player { get; private set; }
     public int MaxSpawnCount => maxSpawned;
     public FlockingAgent Prey => prey;
+    
+    private int prizesSpawned = 0;
 
     private Vector3 RandomInRectWorldPosition()
     {
@@ -96,6 +101,13 @@ public class GameManager : Singleton<GameManager>
                     predator.GetComponent<FollowPlayer>().Speed = Random.Range(0.5f, 1.7f);
                     FlockManager.Instance.AddAgent(predator);
                     ++PredatorCount;
+                }
+
+                if (FlockManager.Instance.FlockCount < 100)
+                {
+                    GameObject go = Instantiate(prize);
+                    go.transform.position = RandomInRectWorldPosition();
+                    ++prizesSpawned;
                 }
             }
         }
@@ -148,6 +160,7 @@ public class GameManager : Singleton<GameManager>
     {
         time = 0f;
         Score = 0;
+        prizesSpawned = 0;
         PredatorCount = startingPredatorCount;
 
         if (!isMainMenu)
