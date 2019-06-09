@@ -141,9 +141,9 @@ public abstract class FlockingAgent : MonoBehaviour
     public void OnUpdate()
     {
         // optimzation problems so lets stop the agents from being able to update every frame and 
-        // do a lot of work every frame
-        //if (Time.frameCount % updateOnFrameDivisibleBy == 0)
-        //{
+        //do a lot of work every frame
+        if (Time.frameCount % updateOnFrameDivisibleBy == 0)
+        {
             Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SearchRadius, AllMask);
 
             List<Vector3> enemyPositions = new List<Vector3>();
@@ -170,7 +170,7 @@ public abstract class FlockingAgent : MonoBehaviour
             Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
             Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
             Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
-        //}
+        }
 
         transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
         KeepInBounds();
