@@ -54,6 +54,8 @@ public abstract class FlockingAgent : MonoBehaviour
         Jitter
     };
 
+    private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
+
     private void Awake()
     {
         if (isPredator)
@@ -140,34 +142,36 @@ public abstract class FlockingAgent : MonoBehaviour
     {
         // optimzation problems so lets stop the agents from being able to update every frame and 
         // do a lot of work every frame
-        if (Time.frameCount % updateOnFrameDivisibleBy != 0) return;
+        //if (Time.frameCount % updateOnFrameDivisibleBy == 0)
+        //{
+            Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SearchRadius, AllMask);
 
-        Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SearchRadius, AllMask);
+            List<Vector3> enemyPositions = new List<Vector3>();
+            List<Vector3> friendPositions = new List<Vector3>();
+            List<Vector2> friendVelocities = new List<Vector2>();
 
-        List<Vector3> enemyPositions = new List<Vector3>();
-        List<Vector3> friendPositions = new List<Vector3>();
-        List<Vector2> friendVelocities = new List<Vector2>();
-
-        FlockManager flock = FlockManager.Instance;
-        Collider2D neighbor;
-        for (int i = 0; i < neighbors.Length; ++i)
-        {
-            neighbor = neighbors[i];
-
-            if (neighbor.tag.Equals(Tag.Predator))
+            FlockManager flock = FlockManager.Instance;
+            Collider2D neighbor;
+            for (int i = 0; i < neighbors.Length; ++i)
             {
-                enemyPositions.Add(neighbor.transform.position);
-            }
-            else
-            {
-                friendPositions.Add(neighbor.transform.position);
-                friendVelocities.Add(flock.Get(neighbor.name).Velocity);
-            }
-        }
+                neighbor = neighbors[i];
 
-        Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
-        Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
-        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
+                if (neighbor.tag.Equals(Tag.Predator))
+                {
+                    enemyPositions.Add(neighbor.transform.position);
+                }
+                else
+                {
+                    friendPositions.Add(neighbor.transform.position);
+                    friendVelocities.Add(flock.Get(neighbor.name).Velocity);
+                }
+            }
+
+            Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
+            Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
+            Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
+        //}
+
         transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
         KeepInBounds();
 
@@ -179,8 +183,7 @@ public abstract class FlockingAgent : MonoBehaviour
         }
     }
 
-    private float RandomBinomial => Random.Range(0f, 1f) - Random.Range(0f, 1f);
-
+    // @todo: why am I not using wander?
     private Vector2 Combine(List<Vector3> enemyPositions, List<Vector3> friendPositions, List<Vector2> friendVelocities)
     {
         if (!isPredator)
@@ -188,7 +191,8 @@ public abstract class FlockingAgent : MonoBehaviour
             return CohesionWeight * Cohesion(friendPositions) +
                 SeparationWeight * Separation(enemyPositions, friendPositions) +
                 AllignmentWeight * Allignment(friendVelocities) +
-                AvoidWeight * Avoid(enemyPositions);
+                AvoidWeight * Avoid(enemyPositions) +
+                WanderWeight * Wander();
         }
         else
         {
@@ -200,9 +204,9 @@ public abstract class FlockingAgent : MonoBehaviour
 
     private Vector2 Wander()
     {
-        float jitter = Weights[11] * Time.deltaTime;
+        float jitter = Weights[6] * Time.deltaTime;
         wanderTarget += new Vector3(RandomBinomial * jitter, RandomBinomial * jitter, 0);
-        wanderTarget *= Weights[6];
+        wanderTarget *= Weights[5];
 
         wanderTarget.Normalize();
         Vector3 targetInLocalSpace = wanderTarget + new Vector3(0, 0, Weights[6]);

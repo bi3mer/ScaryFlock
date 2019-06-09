@@ -54,9 +54,7 @@ public class GameManager : Singleton<GameManager>
     public int MaxSpawnCount => maxSpawned;
     public FlockingAgent Prey => prey;
     
-    private int prizesSpawned = 0;
-
-    private Vector3 RandomInRectWorldPosition()
+    public static Vector3 RandomInRectWorldPosition()
     {
         Vector3 tempPosition = Camera.main.ViewportToWorldPoint(new Vector2(Random.Range(0.2f, 0.95f), Random.Range(0.2f, 0.95f)));
         return new Vector3(tempPosition.x, tempPosition.y, 0f);
@@ -107,7 +105,6 @@ public class GameManager : Singleton<GameManager>
                 {
                     GameObject go = Instantiate(prize);
                     go.transform.position = RandomInRectWorldPosition();
-                    ++prizesSpawned;
                 }
             }
         }
@@ -160,7 +157,6 @@ public class GameManager : Singleton<GameManager>
     {
         time = 0f;
         Score = 0;
-        prizesSpawned = 0;
         PredatorCount = startingPredatorCount;
 
         if (!isMainMenu)

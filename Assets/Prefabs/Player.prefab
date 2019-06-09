@@ -52,7 +52,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: edd958d75ed1448138de86f3335ea4fa, type: 2}
+  - {fileID: 2100000, guid: e73a58f6e2794ae7b1b7e50b7fb811b0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9716981, g: 0.636, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -133,18 +133,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isPredator: 0
-  CohesionRadius: 0.5
-  SeparationRadius: 0.5
-  AllignmentRadius: 0.5
-  WanderRadius: 0.5
-  AvoidRadius: 0.5
+  SearchRadius: 0
   CohesionWeight: 5
   SeparationWeight: 5
   AllignmentWeight: 5
   WanderWeight: 5
   AvoidWeight: 5
   Jitter: 5
-  WanderDistanceRadius: 1
 --- !u!114 &-8186904224606494180
 MonoBehaviour:
   m_ObjectHideFlags: 0
