@@ -142,35 +142,32 @@ public abstract class FlockingAgent : MonoBehaviour
     {
         // optimzation problems so lets stop the agents from being able to update every frame and 
         // do a lot of work every frame
-        //if (Time.frameCount % updateOnFrameDivisibleBy == 0)
-        //{
-            Collider2D[] neighbors = Physics2D.OverlapCircleAll(transform.position, SearchRadius, AllMask);
+        List<FlockingAgent> neighbors = FlockManager.Instance.GetAgentsInRadius(name, SearchRadius);
 
-            List<Vector3> enemyPositions = new List<Vector3>();
-            List<Vector3> friendPositions = new List<Vector3>();
-            List<Vector2> friendVelocities = new List<Vector2>();
+        List<Vector3> enemyPositions = new List<Vector3>();
+        List<Vector3> friendPositions = new List<Vector3>();
+        List<Vector2> friendVelocities = new List<Vector2>();
 
-            FlockManager flock = FlockManager.Instance;
-            Collider2D neighbor;
-            for (int i = 0; i < neighbors.Length; ++i)
+        FlockManager flock = FlockManager.Instance;
+        FlockingAgent neighbor;
+        for (int i = 0; i < neighbors.Count; ++i)
+        {
+            neighbor = neighbors[i];
+
+            if (neighbor.tag.Equals(Tag.Predator))
             {
-                neighbor = neighbors[i];
-
-                if (neighbor.tag.Equals(Tag.Predator))
-                {
-                    enemyPositions.Add(neighbor.transform.position);
-                }
-                else
-                {
-                    friendPositions.Add(neighbor.transform.position);
-                    friendVelocities.Add(flock.Get(neighbor.name).Velocity);
-                }
+                enemyPositions.Add(neighbor.transform.position);
             }
+            else
+            {
+                friendPositions.Add(neighbor.transform.position);
+                friendVelocities.Add(neighbor.Velocity);
+            }
+        }
 
-            Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
-            Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
-            Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
-        //}
+        Vector2 temp = Acceleration + Combine(enemyPositions, friendPositions, friendVelocities);
+        Acceleration = Vector2.ClampMagnitude(temp, maxAcceleration);
+        Velocity = Vector2.ClampMagnitude(Velocity + Acceleration * Time.deltaTime, maxVelocity);
 
         transform.position = transform.position + (Vector3)(Velocity * Time.deltaTime);
         KeepInBounds();

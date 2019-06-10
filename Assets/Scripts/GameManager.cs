@@ -179,14 +179,12 @@ public class GameManager : Singleton<GameManager>
             tempInstantiator = Instantiate(prey);
             tempInstantiator.transform.position = RandomInRectWorldPosition();
             tempInstantiator.RandomizeWeights();
+            FlockManager.Instance.AddAgent(tempInstantiator);
+
 
             if (isMainMenu)
             {
                 tempInstantiator.GetComponent<CircleCollider2D>().enabled = false;
-            }
-            else
-            {
-                FlockManager.Instance.AddAgent(tempInstantiator);
             }
         }
 

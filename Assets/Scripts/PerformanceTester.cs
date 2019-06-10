@@ -31,6 +31,8 @@ public class PerformanceTester : MonoBehaviour
             agent.transform.position = GameManager.RandomInRectWorldPosition();
             agent.RandomizeWeights();
             agent.GetComponent<CircleCollider2D>().enabled = false;
+
+            FlockManager.Instance.AddAgent(agent);
         }
 
         FlockSize += increaseFlockByCount;
