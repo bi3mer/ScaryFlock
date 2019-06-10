@@ -5,6 +5,19 @@ public static class Evolution
     public const float MutationLikelihood = 0.15f;
     public static bool ShouldMutate => Random.Range(0f, 1f) < MutationLikelihood;
 
+    public static BOIDAgent CreateSpawn(BOIDAgent parent1, BOIDAgent parent2)
+    {
+        float searchRadius
+        float cohesionWeight,
+        float separationWeight,
+        float allignmentWeight,
+        float wanderWeight,
+        float avoidWeight,
+        float jitter,
+        float maxAcceleration,
+        float maxVelocity,
+    }
+
     public static void Run(FlockingAgent child, OnUpdateFlockingAgent parent1, OnUpdateFlockingAgent parent2)
     {
         float[] parent1Weights = parent1.Weights;

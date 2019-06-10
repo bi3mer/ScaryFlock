@@ -40,15 +40,10 @@ public static class EvolutionManager
         touchedIds.Add(id1);
         touchedIds.Add(id2);
 
-        FlockingAgent agent1 = FlockManager.Instance.Get(id1);
-        FlockingAgent agent2 = FlockManager.Instance.Get(id2);
+        BOIDAgent agent1 = FlockManager.Instance.Get(id1);
+        BOIDAgent agent2 = FlockManager.Instance.Get(id2);
 
-        if (agent1 == null || agent2 == null)
-        {
-            return;
-        }
-
-        FlockingAgent newAgent = GameManager.Instance.CreateNewPrey();
+        BOIDAgent newAgent = GameManager.Instance.CreateNewPrey();
         Evolution.Run(newAgent, (OnUpdateFlockingAgent)agent1, (OnUpdateFlockingAgent)agent2);
         newAgent.transform.position = new Vector3(
             agent1.transform.position.x + UnityEngine.Random.Range(-1f, 1f),

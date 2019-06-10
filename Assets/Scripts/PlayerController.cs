@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerFlockingAgent : FlockingAgent
+public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
 
